@@ -206,7 +206,10 @@ impl PkarrClient {
             },
             // Since we pass this sender to `Rpc::put`, the only reason the sender,
             // would be dropped, is if `Rpc` is dropped, which should only happeng on shutdown.
-            Err(_) => Err(Error::DhtIsShutdown),
+            Err(e) => {
+                debug!(?e);
+                Err(Error::DhtIsShutdown)
+            }
         }
     }
 
@@ -259,7 +262,10 @@ impl PkarrClient {
 
         self.sender
             .send(ActorMessage::Publish(mutable_item, sender))
-            .map_err(|_| Error::DhtIsShutdown)?;
+            .map_err(|e| {
+                debug!(?e);
+                Error::DhtIsShutdown
+            })?;
 
         Ok(receiver)
     }

@@ -2,6 +2,8 @@
 
 use std::net::SocketAddr;
 
+use tracing::debug;
+
 use super::{
     cache::PkarrCache,
     client::{ActorMessage, PkarrClient},
@@ -53,7 +55,10 @@ impl PkarrClientAsync {
             },
             // Since we pass this sender to `Rpc::put`, the only reason the sender,
             // would be dropped, is if `Rpc` is dropped, which should only happeng on shutdown.
-            Err(_) => Err(Error::DhtIsShutdown),
+            Err(e) => {
+                debug!(?e);
+                Err(Error::DhtIsShutdown)
+            }
         }
     }
 
